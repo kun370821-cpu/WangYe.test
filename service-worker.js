@@ -1,7 +1,8 @@
 /* 家庭大字体电话本 —— 离线缓存
  * 改完代码想让缓存刷新，把下面的版本号 VERSION 改一位即可（例如 v2）。 */
 
-var VERSION = "phonebook-v1";
+/* 改动这里能让所有设备重新缓存一遍（数字或名字变一下即可） */
+var VERSION = "phonebook-v2";
 
 var ASSETS = [
   "./",

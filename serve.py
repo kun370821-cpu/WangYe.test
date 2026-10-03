@@ -51,12 +51,20 @@ class PhonebookHandler(http.server.SimpleHTTPRequestHandler):
     timeout = 15
 
     def log_message(self, fmt, *args):
-        line = "%s  %s\n" % (self.log_date_time_string(), fmt % args)
+        # 记下是谁来访问的（写成文件，不写控制台——原因见上面的说明）
+        line = "%s  %-15s  %s\n" % (self.log_date_time_string(), self.client_address[0], fmt % args)
         try:
             with open(LOG_PATH, "a", encoding="utf-8") as fh:
                 fh.write(line)
         except OSError:
             pass
+
+    def end_headers(self):
+        # 让浏览器每次都回来问一句"变了吗"，而不是一直用本地存的那份旧页面
+        path = self.path.split("?")[0]
+        if not path.startswith("/api/"):
+            self.send_header("Cache-Control", "no-cache, must-revalidate")
+        super().end_headers()
 
     # ---------- 网页上点「保存」时，直接把 data.js 写掉 ----------
 
@@ -95,7 +103,11 @@ class PhonebookHandler(http.server.SimpleHTTPRequestHandler):
             self._send_json(500, {"ok": False, "error": str(err)})
             return
 
-        self._send_json(200, {"ok": True, "count": len(items)})
+        self._send_json(200, {
+            "ok": True,
+            "count": len(items),
+            "updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        })
 
 
 def build_data_js(items):
@@ -144,6 +156,9 @@ def build_data_js(items):
         "",
         "/* 分类在页面上的先后顺序 */",
         "const DEFAULT_GROUP_ORDER = " + json.dumps(order, ensure_ascii=False) + ";",
+        "",
+        "/* 数据最后更新时间，页面上会显示，方便核对手机是不是拿到了最新的一份 */",
+        "const DATA_UPDATED = " + json.dumps(now, ensure_ascii=False) + ";",
         "",
     ]
     return "\n".join(lines)

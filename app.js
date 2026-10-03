@@ -55,6 +55,7 @@
   var fPhone = document.getElementById("f-phone");
   var fGroup = document.getElementById("f-group");
   var fNote = document.getElementById("f-note");
+  var stampEl = document.getElementById("data-stamp");
 
   /* ---------------- 状态 ---------------- */
 
@@ -65,6 +66,7 @@
   var formPhoto = "";
   var formEmoji = "👤";
   var toastTimer = null;
+  var usingBrowserCopy = false;   // 用的是不是"在这台电脑上编辑过"的那份
 
   /* 手机/平板点卡片直接拨号；电脑上点了会弹出"用哪个应用打开"，
    * 所以电脑上改成"点一下复制号码"。 */
@@ -173,17 +175,31 @@
     if (saved) {
       try {
         var arr = JSON.parse(saved);
-        if (Array.isArray(arr)) return arr.map(normalize);
+        if (Array.isArray(arr)) {
+          usingBrowserCopy = true;
+          return arr.map(normalize);
+        }
       } catch (err) {
         /* 数据坏了就退回默认数据 */
       }
     }
+    usingBrowserCopy = false;
     return DEFAULT_CONTACTS.map(normalize);
+  }
+
+  /* 在页面底部显示"联系人数据是什么时候的、来自哪里"，
+   * 方便核对手机有没有拿到最新的一份。 */
+  function renderStamp(updated) {
+    if (!stampEl) return;
+    var time = updated || ((typeof DATA_UPDATED !== "undefined") ? DATA_UPDATED : "");
+    var source = usingBrowserCopy ? "这台电脑上编辑过的版本" : "data.js";
+    stampEl.textContent = "联系人数据：" + (time ? "最后更新 " + time : "没有记录更新时间") + "（来源：" + source + "）";
   }
 
   function saveContacts() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts));
+      usingBrowserCopy = true;
     } catch (err) {
       toast("保存失败：浏览器存储空间可能不够，照片少放几张试试");
     }
@@ -202,6 +218,7 @@
       if (!resp.ok) throw new Error("save failed");
       return resp.json();
     }).then(function (result) {
+      renderStamp(result.updated);
       toast("已保存，并直接写进了 data.js（" + result.count + " 位联系人）");
     }).catch(function () {
       toast("已保存，但只存在这台电脑的浏览器里；要写进文件请点「导出 data.js」");
@@ -613,9 +630,50 @@
     if (!("serviceWorker" in navigator)) return;
     if (location.protocol !== "http:" && location.protocol !== "https:") return;
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("service-worker.js").catch(function () {
+      navigator.serviceWorker.register("service-worker.js").then(function (reg) {
+        // 主动问一句有没有新版本
+        try { reg.update(); } catch (err) { /* 忽略 */ }
+
+        // 只有在"本来就有旧版本"的情况下，换新版本时才自动刷新，
+        // 这样长辈什么都不用做，打开就是最新的。
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.addEventListener("controllerchange", function () {
+            location.reload();
+          });
+        }
+      }).catch(function () {
         /* 注册失败不影响正常使用 */
       });
+    });
+  }
+
+  /* 页面上那个「更新到最新版本」按钮：
+   * 把本地缓存全清掉、注销离线服务，然后重新加载。
+   * 手机或电脑上看到的一直是旧内容时，点它一下就好。 */
+  function forceUpdate() {
+    var tasks = [];
+    if (window.caches && caches.keys) {
+      tasks.push(caches.keys().then(function (keys) {
+        return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+      }));
+    }
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+      tasks.push(navigator.serviceWorker.getRegistrations().then(function (regs) {
+        return Promise.all(regs.map(function (r) { return r.unregister(); }));
+      }));
+    }
+    return Promise.all(tasks).catch(function () {
+      /* 清不掉也照样刷新 */
+    }).then(function () {
+      location.reload();
+    });
+  }
+
+  var updateBtn = document.getElementById("force-update");
+  if (updateBtn) {
+    updateBtn.addEventListener("click", function () {
+      toast("正在更新，稍等一两秒…");
+      forceUpdate();
     });
   }
 
@@ -728,6 +786,7 @@
   /* ---------------- 启动 ---------------- */
 
   contacts = loadContacts();
+  renderStamp();
   renderTabs();
   renderList();
   fillGroupOptions();
