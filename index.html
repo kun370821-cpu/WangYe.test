@@ -26,9 +26,25 @@
       <button id="size-toggle" class="tool-btn" type="button" aria-pressed="false">
         特大字号
       </button>
+      <button id="edit-toggle" class="tool-btn" type="button" aria-pressed="false">
+        编辑
+      </button>
     </header>
 
     <nav id="tabs" class="tabs" aria-label="联系人分类"></nav>
+
+    <div id="edit-bar" class="edit-bar" hidden>
+      <button id="add-contact" class="edit-action strong" type="button">＋ 添加联系人</button>
+      <button id="export-data" class="edit-action" type="button">导出 data.js</button>
+      <button id="import-data" class="edit-action" type="button">导入</button>
+      <button id="reset-data" class="edit-action" type="button">恢复默认</button>
+      <p class="edit-tip">
+        改动会自动写进项目里的 <code>data.js</code>（本地服务开着的时候），
+        想让长辈看到，把改动推送到 GitHub 即可。照片会自动压缩到 400 像素左右并嵌进文件里，
+        不用另外放图片。如果提示写不进文件（例如页面部署在网上），
+        就用「导出 data.js」手动替换。
+      </p>
+    </div>
   </div>
 
   <main class="page">
@@ -45,10 +61,70 @@
       <p class="help-note">改号码：用电脑打开 <code>data.js</code>，照着格式改就行，改完保存刷新页面。</p>
       <p class="help-note">电脑上点卡片不会拨号（电脑没有打电话的功能），
         会直接帮你把号码复制下来；「拨号」只有手机、平板才会出现。</p>
+      <p class="help-note">当前版本：v3（带编辑功能）。看不到「编辑」按钮说明浏览器用的是旧缓存，
+        先启动本地服务再刷新一次；还不行就按 Ctrl+F5 强制刷新。</p>
     </details>
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- 编辑联系人用的表单，平时隐藏 -->
+  <div id="form-overlay" class="form-overlay" hidden>
+    <form id="contact-form" class="contact-form" novalidate>
+      <h2 id="form-title">添加联系人</h2>
+
+      <div class="avatar-editor">
+        <div id="photo-preview" class="avatar big">👤</div>
+        <div class="avatar-actions">
+          <button type="button" id="pick-photo" class="edit-action">选择照片</button>
+          <button type="button" id="clear-photo" class="edit-action quiet">去掉照片</button>
+          <p class="avatar-tip">照片会自动缩小到 400 像素以内，不占地方。</p>
+        </div>
+        <input id="photo-input" type="file" accept="image/*" hidden>
+      </div>
+
+      <label class="field">
+        <span>称呼（卡片上最大的那行字）</span>
+        <input id="f-relation" type="text" maxlength="8" placeholder="例如：大女儿" autocomplete="off">
+      </label>
+
+      <label class="field">
+        <span>名字</span>
+        <input id="f-name" type="text" maxlength="12" placeholder="例如：王丽" autocomplete="off">
+      </label>
+
+      <label class="field">
+        <span>电话号码</span>
+        <!-- 用 type="text" 配 inputmode="tel"：手机上照样弹数字键盘，
+             但比 type="tel" 少一层浏览器特殊处理，兼容性更稳 -->
+        <input id="f-phone" type="text" inputmode="tel" placeholder="例如：13800000002" autocomplete="off">
+      </label>
+
+      <label class="field">
+        <span>分类</span>
+        <input id="f-group" type="text" list="group-options" maxlength="8" placeholder="家人 / 医生 / 物业 / 快递" autocomplete="off">
+        <datalist id="group-options"></datalist>
+      </label>
+
+      <label class="field">
+        <span>备注（可以留空）</span>
+        <input id="f-note" type="text" maxlength="20" placeholder="例如：周末回家" autocomplete="off">
+      </label>
+
+      <div class="field">
+        <span>没有照片时显示的图案</span>
+        <div id="emoji-picker" class="emoji-picker"></div>
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="primary">保存</button>
+        <button type="button" id="form-cancel">取消</button>
+        <button type="button" id="form-delete" class="danger" hidden>删除</button>
+      </div>
+    </form>
+  </div>
+
+  <input id="import-input" type="file" accept=".js,.json,text/javascript,application/json" hidden>
 
   <script src="data.js"></script>
   <script src="app.js"></script>

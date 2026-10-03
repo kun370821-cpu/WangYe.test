@@ -340,6 +340,241 @@ body.huge {
   text-align: center;
 }
 
+/* ============================================================
+ * 编辑模式
+ * ============================================================ */
+
+.edit-bar[hidden],
+.form-overlay[hidden],
+.card-actions[hidden] {
+  display: none;
+}
+
+.edit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: #fff7e8;
+  border-bottom: 1px solid #f0d9a8;
+}
+
+.edit-action {
+  min-height: 48px;
+  padding: 0 18px;
+  border: 2px solid #e3c88b;
+  border-radius: 999px;
+  background: #fff;
+  color: #7a5410;
+  font-family: inherit;
+  font-size: calc(1rem * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.edit-action:hover {
+  border-color: #c9a54e;
+}
+
+.edit-action.strong {
+  background: #f0a020;
+  border-color: #f0a020;
+  color: #fff;
+}
+
+.edit-action.quiet {
+  border-color: #dfe5ee;
+  color: var(--ink-soft);
+}
+
+.edit-action.danger,
+.form-buttons .danger {
+  border-color: #f0b8b8;
+  color: #b3261e;
+}
+
+.edit-tip {
+  flex: 1 1 320px;
+  margin: 0;
+  color: #7a5410;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.edit-tip code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: #f6e6c6;
+}
+
+/* 编辑模式下卡片上的「修改 / 删除」 */
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.card-actions button {
+  flex: 1 1 auto;
+  min-height: 52px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: calc(1.05rem * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.card-actions .del {
+  border-color: #f0b8b8;
+  color: #b3261e;
+}
+
+body.editing .card {
+  border-color: #f0d9a8;
+  box-shadow: none;
+}
+
+body.editing .copy-btn {
+  display: none;
+}
+
+/* ---------------- 表单 ---------------- */
+
+.form-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  background: rgba(22, 33, 46, 0.55);
+}
+
+.contact-form {
+  width: 100%;
+  max-width: 560px;
+  padding: 22px;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.contact-form h2 {
+  margin: 0 0 16px;
+  font-size: calc(1.4rem * var(--scale));
+}
+
+.avatar-editor {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.avatar.big {
+  width: 112px;
+  height: 112px;
+  font-size: calc(3.2rem * var(--scale));
+}
+
+.avatar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.avatar-tip {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.field > span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink-soft);
+  font-size: calc(1rem * var(--scale));
+}
+
+.field input {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 14px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fbfcfe;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: calc(1.15rem * var(--scale));
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--brand);
+  background: #fff;
+}
+
+.emoji-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.emoji-picker button {
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.emoji-picker button[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: #eaf1ff;
+}
+
+.form-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-buttons button {
+  flex: 1 1 120px;
+  min-height: 56px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: calc(1.1rem * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form-buttons .primary {
+  flex: 1 1 160px;
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card {
     transition: none;
@@ -383,5 +618,28 @@ body.huge {
 
   .card-list {
     gap: 14px;
+  }
+
+  /* 手机上顶栏有三个东西，紧凑一点免得挤 */
+  .topbar {
+    gap: 8px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .app-title {
+    font-size: calc(1.25rem * var(--scale));
+    letter-spacing: 0.02em;
+  }
+
+  .tool-btn {
+    min-height: 46px;
+    padding: 0 12px;
+    font-size: calc(0.88rem * var(--scale));
+  }
+
+  .avatar-editor {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

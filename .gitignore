@@ -11,3 +11,4 @@ build/
 # 日志
 *.log
 npm-debug.log*
+*.bak
