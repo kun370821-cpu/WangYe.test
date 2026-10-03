@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>家庭电话本</title>
+  <meta name="description" content="给长辈用的超大字号电话本，点一下卡片就能直接拨号。">
+
+  <meta name="theme-color" content="#1f6feb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="电话本">
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#list">跳到联系人列表</a>
+
+  <div class="sticky-top">
+    <header class="topbar">
+      <h1 class="app-title">家庭电话本</h1>
+      <button id="size-toggle" class="tool-btn" type="button" aria-pressed="false">
+        特大字号
+      </button>
+    </header>
+
+    <nav id="tabs" class="tabs" aria-label="联系人分类"></nav>
+  </div>
+
+  <main class="page">
+    <section id="list" class="card-list" aria-label="联系人列表"></section>
+    <p id="empty" class="empty" hidden>这个分类里还没有联系人。</p>
+
+    <details class="help">
+      <summary>怎么把电话本放到手机桌面上？</summary>
+      <ol>
+        <li><strong>安卓手机</strong>：用 Chrome 打开本页，点右上角「⋮」，选「添加到主屏幕」。</li>
+        <li><strong>苹果手机</strong>：用 Safari 打开本页，点底部「分享」，选「添加到主屏幕」。</li>
+        <li>放好以后，图标就像一个 App，断网也能打开。</li>
+      </ol>
+      <p class="help-note">改号码：用电脑打开 <code>data.js</code>，照着格式改就行，改完保存刷新页面。</p>
+    </details>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

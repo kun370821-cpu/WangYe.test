@@ -1,0 +1,387 @@
+/* ============================================================
+ * 家庭大字体电话本 —— 样式
+ * 想调整字号、配色，改下面 :root 里的变量就行。
+ * ============================================================ */
+
+:root {
+  --bg: #eef2f9;
+  --card: #ffffff;
+  --ink: #16212e;
+  --ink-soft: #5d6b7e;
+  --brand: #1f6feb;
+  --brand-deep: #14509f;
+  --ring: #c8dcff;
+  --line: #dbe3ee;
+  --shadow: 0 8px 20px rgba(22, 33, 46, 0.10);
+  --radius: 24px;
+  --scale: 1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0 0 calc(40px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  font-size: calc(18px * var(--scale));
+  line-height: 1.45;
+}
+
+/* 点「特大字号」按钮后，整页字都变大 */
+body.huge {
+  --scale: 1.16;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  left: 12px;
+  top: 12px;
+  z-index: 99;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 12px;
+}
+
+/* ---------------- 顶部标题栏 ---------------- */
+
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 14px;
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-deep) 100%);
+  color: #fff;
+}
+
+.app-title {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: calc(1.6rem * var(--scale));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.tool-btn {
+  flex: 0 0 auto;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-family: inherit;
+  font-size: calc(1.05rem * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tool-btn[aria-pressed="true"] {
+  background: #fff;
+  color: var(--brand-deep);
+}
+
+/* ---------------- 分类切换 ---------------- */
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  padding: 12px 18px;
+  overflow-x: auto;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  flex: 0 0 auto;
+  min-height: 60px;
+  padding: 0 24px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: calc(1.25rem * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab[aria-selected="true"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(31, 111, 235, 0.35);
+}
+
+/* ---------------- 联系人卡片 ---------------- */
+
+.page {
+  padding: 18px;
+}
+
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 720px) {
+  .card-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.card-wrap {
+  position: relative;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 150px;
+  padding: 20px 22px;
+  background: var(--card);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+
+.card:hover {
+  border-color: var(--ring);
+}
+
+.card:active {
+  transform: scale(0.985);
+}
+
+.card:focus-visible {
+  outline: 4px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.avatar {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #e8f0ff;
+  font-size: calc(2.8rem * var(--scale));
+  line-height: 1;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.relation {
+  padding-right: 48px;   /* 给右上角的「复制」按钮留位置 */
+  font-size: calc(1.9rem * var(--scale));
+  font-weight: 700;
+  line-height: 1.2;
+  word-break: break-all;
+}
+
+.name {
+  margin-top: 2px;
+  font-size: calc(1.15rem * var(--scale));
+  color: var(--ink-soft);
+}
+
+/* 号码 + 拨号标签：位置不够时自动换行，不会互相遮挡 */
+.dial-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.phone {
+  flex: 0 0 auto;
+  font-size: calc(1.45rem * var(--scale));
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: 0.04em;
+}
+
+.note {
+  margin-top: 6px;
+  font-size: calc(1rem * var(--scale));
+  color: var(--ink-soft);
+}
+
+.call-hint {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #eaf1ff;
+  color: var(--brand-deep);
+  font-size: calc(1rem * var(--scale));
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  color: var(--brand-deep);
+  border-color: var(--ring);
+}
+
+.empty {
+  padding: 40px 10px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: calc(1.2rem * var(--scale));
+}
+
+/* ---------------- 使用说明 ---------------- */
+
+.help {
+  margin-top: 28px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.help summary {
+  cursor: pointer;
+  font-size: calc(1.15rem * var(--scale));
+  font-weight: 700;
+}
+
+.help ol {
+  margin: 12px 0 0;
+  padding-left: 1.4em;
+}
+
+.help li {
+  margin-bottom: 6px;
+}
+
+.help-note {
+  margin: 12px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.help code {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #f1f4f9;
+  font-size: 0.95em;
+}
+
+/* ---------------- 复制提示气泡 ---------------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  z-index: 50;
+  max-width: min(90vw, 520px);
+  padding: 14px 24px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(22, 33, 46, 0.92);
+  color: #fff;
+  font-size: calc(1.05rem * var(--scale));
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}
+
+/* 手机窄屏：头像和留白小一点，把宽度让给字 */
+@media (max-width: 430px) {
+  .page {
+    padding: 14px;
+  }
+
+  .card {
+    gap: 14px;
+    padding: 16px 18px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    font-size: calc(2.3rem * var(--scale));
+  }
+
+  .relation {
+    padding-right: 0;
+  }
+
+  /* 手机上把「复制」挪到右下角，上面几行字就能用满整行 */
+  .note {
+    padding-right: 68px;
+  }
+
+  .copy-btn {
+    top: auto;
+    bottom: 12px;
+    right: 14px;
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 0.95rem;
+  }
+
+  .card-list {
+    gap: 14px;
+  }
+}
