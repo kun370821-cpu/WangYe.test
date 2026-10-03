@@ -17,6 +17,16 @@
   var currentGroup = ALL;
   var toastTimer = null;
 
+  /* 判断是不是手机/平板：
+   * 这些设备点卡片应该直接拨号；电脑上点了会弹出"用哪个应用打开"的窗口，
+   * 所以电脑上改成"点一下复制号码"。 */
+  var isMobileDevice = (function () {
+    var ua = navigator.userAgent || "";
+    if (/Android|iPhone|iPad|iPod|HarmonyOS|Windows Phone|Mobile/i.test(ua)) return true;
+    if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return true;
+    return false;
+  })();
+
   /* ---------------- 小工具 ---------------- */
 
   function onlyDigits(value) {
@@ -67,6 +77,16 @@
       } catch (err) {
         reject(err);
       }
+    });
+  }
+
+  /* 复制号码并给出提示（电脑上点卡片、点「复制」都走这里） */
+  function copyNumber(phone, prefix) {
+    var shown = formatPhone(phone);
+    copyText(onlyDigits(phone)).then(function () {
+      toast(prefix + shown);
+    }).catch(function () {
+      toast("复制不了，号码是：" + shown);
     });
   }
 
@@ -138,7 +158,18 @@
     var card = document.createElement("a");
     card.className = "card";
     card.href = "tel:" + onlyDigits(item.phone);
-    card.setAttribute("aria-label", "给" + (item.relation || item.name || "联系人") + "打电话 " + formatPhone(item.phone));
+    card.setAttribute(
+      "aria-label",
+      (isMobileDevice ? "给" + (item.relation || item.name || "联系人") + "打电话 " : "复制") + formatPhone(item.phone)
+    );
+
+    // 电脑上不让 tel: 链接真的跳转（否则 Windows 会弹"用哪个应用打开"）
+    if (!isMobileDevice) {
+      card.addEventListener("click", function (event) {
+        event.preventDefault();
+        copyNumber(item.phone, "电脑上不能直接拨号，号码已复制：");
+      });
+    }
 
     card.appendChild(makeAvatar(item));
 
@@ -167,7 +198,7 @@
 
     var hint = document.createElement("span");
     hint.className = "call-hint";
-    hint.textContent = "拨号";
+    hint.textContent = isMobileDevice ? "拨号" : "复制号码";
     dialRow.appendChild(hint);
 
     info.appendChild(dialRow);
@@ -189,12 +220,7 @@
     copyBtn.textContent = "复制";
     copyBtn.title = "复制号码";
     copyBtn.addEventListener("click", function () {
-      var number = onlyDigits(item.phone);
-      copyText(number).then(function () {
-        toast("号码已复制：" + formatPhone(item.phone));
-      }).catch(function () {
-        toast("复制失败，号码是：" + formatPhone(item.phone));
-      });
+      copyNumber(item.phone, "号码已复制：");
     });
     wrap.appendChild(copyBtn);
 
